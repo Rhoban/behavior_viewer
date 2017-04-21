@@ -7,10 +7,15 @@ var monitorMoves = [
 // Menu panel
 var menu = [
     {
+        // Reset the robot & ball position on the field
         'type': 'button',
-        'name': 'Reset position',
-        'cmd': '/localisation/resetPosition'
-    }
+        'label': 'Reset position',
+        'action': function() {
+            rhio.cmd('/localisation/resetPosition');
+            rhio.cmd('/localisation/fakeBall 1 0');
+        }
+    },
+
 ];
 
 // Canvas size
@@ -260,25 +265,6 @@ $(document).ready(function() {
         }
     });
 
-    // Generating moves
-    var html = '';
-    for (var k in monitorMoves) {
-        var name = monitorMoves[k];
-        html += '<div class="move move_'+name+'">';
-        html += '<span class="name">'+name+'</span><br/>';
-        html += '[<span class="state">?</span>]';
-        html += '</div>';
-    }
-    $('.moves').html(html);
-    $('.move').click(function() {
-        var name = $(this).find('.name').text();
-        if ($(this).hasClass('running')) {
-            rhio.cmd('/moves/stop '+name);
-        } else {
-            rhio.cmd('/moves/start '+name);
-        }
-    });
-
     $('#field').mousemove(function(e) {
         var pos = eventToM(e);
 
@@ -300,9 +286,44 @@ $(document).ready(function() {
         dragging = null;
         rotating = null;
     });
-
-    $('.resetPosition').click(function() {
-        rhio.cmd('/localisation/resetPosition');
-        rhio.cmd('/localisation/fakeBall 1 0');
+    
+    // Generating moves
+    var html = '';
+    for (var k in monitorMoves) {
+        var name = monitorMoves[k];
+        html += '<div class="move move_'+name+'">';
+        html += '<span class="name">'+name+'</span><br/>';
+        html += '[<span class="state">?</span>]';
+        html += '</div>';
+    }
+    $('.moves').html(html);
+    $('.move').click(function() {
+        var name = $(this).find('.name').text();
+        if ($(this).hasClass('running')) {
+            rhio.cmd('/moves/stop '+name);
+        } else {
+            rhio.cmd('/moves/start '+name);
+        }
     });
+
+    // Generating menu
+    html = '';
+    for (var k in menu) {
+        var entry = menu[k];
+
+        if (entry.type == 'button') {
+            html += '<button class="menu_'+k+' btn btn-primary">'+entry.label+'</button>';
+        }
+    }
+    $('.menu').html(html);
+    for (var k in menu) {
+        var entry = menu[k];
+        (function(entry, k) {
+            $('.menu_'+k).click(function() {
+                if (entry.type == 'button') {
+                    entry.action();
+                }
+            });
+        })(entry, k);
+    }
 });

@@ -36,17 +36,25 @@ var menu = [
     },
     {
         'type': 'bool',
+        'label': 'Should let play (team)',
+        'node': '/decision/shouldLetPlayTeam'
+    },
+    {
+        "type": "separator"
+    },
+    {
+        'type': 'bool',
+        'readOnly': true,
         'label': 'Should let play',
         'node': '/decision/shouldLetPlay'
     },
-    // Should let play
     {
         "type": "separator"
     },
     {
         'type': 'zone',
         'update': function(div) {
-            div.text(rhio.cmd('/referee/playing'));
+            div.html('<pre>'+rhio.cmd('/referee/playing')+'</pre>');
         }
     }
 ];
@@ -121,8 +129,12 @@ function redraw()
     ctx.beginPath();
     ctx.moveTo(-fieldLength/2 + penaltyMark, 0);
     ctx.lineTo(-fieldLength/2 + penaltyMark + 0.1, 0);
+    ctx.moveTo(-fieldLength/2 + penaltyMark + 0.05, 0.05);
+    ctx.lineTo(-fieldLength/2 + penaltyMark + 0.05, -0.05);
     ctx.moveTo(fieldLength/2 - penaltyMark, 0);
     ctx.lineTo(fieldLength/2 - penaltyMark + 0.1, 0);
+    ctx.moveTo(fieldLength/2 - penaltyMark + 0.05, 0.05);
+    ctx.lineTo(fieldLength/2 - penaltyMark + 0.05, -0.05);
     ctx.moveTo(-0.05, 0);
     ctx.lineTo(0.05, 0);
     ctx.stroke();
@@ -363,14 +375,17 @@ $(document).ready(function() {
             html += '<label class="menu_'+k+'">';
             html += '<input ';
             if (checked) {
-                html += 'checked="checked"';
+                html += 'checked="checked" ';
+            }
+            if ('readOnly' in entry) {
+                html += 'readonly ';
             }
             html += ' type="checkbox" /> '+entry.label;
             html += '</label><br/>';
         } else if (entry.type == 'separator') {
             html += '<hr/>';
         } else if (entry.type == 'zone') {
-            html += '<div class="zone menu_'+k+'"></div>';
+            html += '<div class="menu_'+k+'"></div>';
         }
     }
     $('.menu').html(html);

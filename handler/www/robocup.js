@@ -34,6 +34,11 @@ var menu = [
         'label': 'Is fallen',
         'node': '/decision/isFallen'
     },
+    {
+        'type': 'bool',
+        'label': 'Should let play',
+        'node': '/decision/shouldLetPlay'
+    },
     // Should let play
     {
         "type": "separator"

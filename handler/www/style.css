@@ -60,3 +60,12 @@ body {
 .move.fading {
     background-color:#f0ad4e;
 }
+
+hr {
+    margin:4px !important;
+    padding:4px !important;
+}
+
+.zone {
+    font-family:monospace;
+}

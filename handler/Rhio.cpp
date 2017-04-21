@@ -17,6 +17,16 @@ Rhio::~Rhio()
     delete clientSub;
 }
 
+bool Rhio::getBool(QString name)
+{
+    return client->getBool(name.toStdString());
+}
+
+void Rhio::setBool(QString name, bool v)
+{
+    client->setBool(name.toStdString(), v);
+}
+
 float Rhio::getFloat(QString name)
 {
     return client->getFloat(name.toStdString());

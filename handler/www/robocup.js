@@ -1,7 +1,8 @@
 
 // Monitored moves
 var monitorMoves = [
-    'robocup', 'approach', 'standup', 'head', 'walk'
+    'robocup', 'approach', 'search',
+    'standup', 'head', 'walk', 'placer'
 ];
 
 // Menu panel
@@ -15,7 +16,34 @@ var menu = [
             rhio.cmd('/localisation/fakeBall 1 0');
         }
     },
-
+    {
+        "type": "separator"
+    },
+    {
+        'type': 'bool',
+        'label': 'Ball quality is good',
+        'node': '/decision/isBallQualityGood'
+    },
+    {
+        'type': 'bool',
+        'label': 'Field quality is good',
+        'node': '/decision/isFieldQualityGood'
+    },
+    {
+        'type': 'bool',
+        'label': 'Is fallen',
+        'node': '/decision/isFallen'
+    },
+    // Should let play
+    {
+        "type": "separator"
+    },
+    {
+        'type': 'zone',
+        'update': function(div) {
+            div.text(rhio.cmd('/referee/playing'));
+        }
+    }
 ];
 
 // Canvas size
@@ -177,6 +205,18 @@ function update()
         }
     }
 
+    // Updating menu
+    for (var k in menu) {
+        var entry = menu[k];
+
+        if (entry.type == 'bool') {
+            $('.menu_'+k+' input').prop('checked', rhio.getBool(entry.node));
+        }
+        if (entry.type == 'zone') {
+            entry.update($('.menu_'+k));
+        }
+    }
+
     redraw();
 }
 
@@ -312,7 +352,20 @@ $(document).ready(function() {
         var entry = menu[k];
 
         if (entry.type == 'button') {
-            html += '<button class="menu_'+k+' btn btn-primary">'+entry.label+'</button>';
+            html += '<button class="menu_'+k+' btn btn-primary">'+entry.label+'</button><br/>';
+        } else if (entry.type == 'bool') {
+            var checked = rhio.getBool(entry.node);
+            html += '<label class="menu_'+k+'">';
+            html += '<input ';
+            if (checked) {
+                html += 'checked="checked"';
+            }
+            html += ' type="checkbox" /> '+entry.label;
+            html += '</label><br/>';
+        } else if (entry.type == 'separator') {
+            html += '<hr/>';
+        } else if (entry.type == 'zone') {
+            html += '<div class="zone menu_'+k+'"></div>';
         }
     }
     $('.menu').html(html);
@@ -322,6 +375,12 @@ $(document).ready(function() {
             $('.menu_'+k).click(function() {
                 if (entry.type == 'button') {
                     entry.action();
+                } else if (entry.type == 'bool') {
+                    if ($(this).find('input').is(':checked')) {
+                        rhio.setBool(entry.node, true);
+                    } else {
+                        rhio.setBool(entry.node, false);
+                    }
                 }
             });
         })(entry, k);

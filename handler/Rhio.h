@@ -18,6 +18,8 @@ public:
 signals:
 
 public slots:
+    bool getBool(QString name);
+    void setBool(QString name, bool v);
     float getFloat(QString name);
     void setFloat(QString name, float f);
     QString cmd(QString cmd);

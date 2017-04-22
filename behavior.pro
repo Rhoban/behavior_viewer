@@ -10,7 +10,7 @@ RESOURCES += www.qrc
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = handler
+TARGET = BehaviorViewer
 TEMPLATE = app
 
 

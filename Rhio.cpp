@@ -9,6 +9,8 @@ Rhio::Rhio(std::string server)
     std::string subServer = "tcp://"+server+":"+ServerPubPort;
     client = new ClientReq(reqServer);
     clientSub = new ClientSub(subServer);
+
+    client->listChildren("/");
 }
 
 Rhio::~Rhio()
@@ -48,5 +50,13 @@ QString Rhio::cmd(QString cmd)
             args.push_back(list[i].toStdString());
         }
     }
-    return QString::fromStdString(client->call(name, args));
+
+    std::string result;
+    try {
+        result = client->call(name, args);
+    } catch (std::runtime_error) {
+        result = "";
+    }
+
+    return QString::fromStdString(result);
 }

@@ -1,4 +1,5 @@
 #include "mainwindow.h"
+#include "Rhio.h"
 #include <QApplication>
 
 int main(int argc, char *argv[])
@@ -10,7 +11,9 @@ int main(int argc, char *argv[])
         server = QString(argv[1]);
     }
 
-    MainWindow w(server);
+    Rhio rhio(server.toStdString());
+
+    MainWindow w(&rhio);
     w.show();
 
     return a.exec();

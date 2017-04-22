@@ -14,12 +14,12 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(QString server, QWidget *parent = 0);
+    explicit MainWindow(Rhio *rhio, QWidget *parent = 0);
     ~MainWindow();
 
 private:
     Ui::MainWindow *ui;
-    Rhio rhio;
+    Rhio *rhio;
 };
 
 #endif // MAINWINDOW_H

@@ -372,7 +372,11 @@ $(document).ready(function() {
             html += '<button class="menu_'+k+' btn btn-primary">'+entry.label+'</button><br/>';
         } else if (entry.type == 'bool') {
             var checked = rhio.getBool(entry.node);
-            html += '<label class="menu_'+k+'">';
+            html += '<label class="menu_'+k+'';
+                if ('readOnly' in entry) {
+                    html += ' readonly';
+            }
+            html += '">';
             html += '<input ';
             if (checked) {
                 html += 'checked="checked" ';
@@ -392,17 +396,19 @@ $(document).ready(function() {
     for (var k in menu) {
         var entry = menu[k];
         (function(entry, k) {
-            $('.menu_'+k).click(function() {
-                if (entry.type == 'button') {
-                    entry.action();
-                } else if (entry.type == 'bool') {
-                    if ($(this).find('input').is(':checked')) {
-                        rhio.setBool(entry.node, true);
-                    } else {
-                        rhio.setBool(entry.node, false);
+            if (!('readOnly' in entry)) {
+                $('.menu_'+k).click(function() {
+                    if (entry.type == 'button') {
+                        entry.action();
+                    } else if (entry.type == 'bool') {
+                        if ($(this).find('input').is(':checked')) {
+                            rhio.setBool(entry.node, true);
+                        } else {
+                            rhio.setBool(entry.node, false);
+                        }
                     }
-                }
-            });
+                });
+            }
         })(entry, k);
     }
 });

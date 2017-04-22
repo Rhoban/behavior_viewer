@@ -70,3 +70,7 @@ pre {
     font-size:11px !important;
     padding:2px;
 }
+
+.readonly {
+    opacity:0.5;
+}

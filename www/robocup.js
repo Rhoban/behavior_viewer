@@ -23,6 +23,19 @@ var menu = [
     },
     {
         'type': 'bool',
+        'label': 'Is goal keeper',
+        'node': '/moves/robocup/goalKeeper',
+    },
+    {
+        'type': 'bool',
+        'label': 'Should let play (team)',
+        'node': '/decision/shouldLetPlayTeam'
+    },
+    {
+        'type': 'separator'
+    },
+    {
+        'type': 'bool',
         'label': 'Ball quality is good',
         'node': '/decision/isBallQualityGood'
     },
@@ -68,11 +81,6 @@ var menu = [
         }
     },
     {
-        'type': 'bool',
-        'label': 'Is goal keeper',
-        'node': '/moves/robocup/goalKeeper',
-    },
-    {
         "type": "separator"
     },
     {
@@ -80,11 +88,6 @@ var menu = [
         'readOnly': true,
         'label': 'Should let play',
         'node': '/decision/shouldLetPlay'
-    },
-    {
-        'type': 'bool',
-        'label': 'Should let play (team)',
-        'node': '/decision/shouldLetPlayTeam'
     },
     {
         "type": "separator"
@@ -382,12 +385,11 @@ $(document).ready(function() {
     var dragging = null;
     var rotating = null;
     var prev;
-    var base;
+    var saveRobotPos;
 
     $('#field').mousedown(function(e) {
         var pos = eventToM(e);
         prev = pos;
-        base = pos;
 
         if (e.which == 1) {
             if (near(pos, ballX, ballY)) {
@@ -404,7 +406,7 @@ $(document).ready(function() {
             if (near(pos, robotX, robotY, 2)) {
                 var a = Math.atan2(pos[1]-robotY, pos[0]-robotX);
                 var y = robotYaw;
-                base = [a, y];
+                saveRobotPos = [robotX, robotY];
                 rotating = 'robot';
             }
         }
@@ -418,12 +420,10 @@ $(document).ready(function() {
         } else if (dragging == 'shared') {
             updateSharedBallPosition(pos[0], pos[1]);
         } else if (dragging == 'robot') {
-            updateRobotPosition(pos[0]-prev[0], pos[1]-prev[1], 0);
+            updateRobotPosition(pos[0], pos[1], robotYaw);
         } else if (rotating == 'robot') {
             var a = Math.atan2(pos[1]-robotY, pos[0]-robotX);
-            var old = base[0];
-            updateRobotPosition(0, 0, a-old);
-            base[0] = a;
+            updateRobotPosition(saveRobotPos[0], saveRobotPos[1], a);
         }
 
         prev = pos;

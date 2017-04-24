@@ -14,6 +14,8 @@ var menu = [
         'action': function() {
             rhio.cmd('/localisation/resetPosition');
             rhio.cmd('/localisation/fakeBall 1 0');
+            rhio.setFloat('/decision/shareX', (fieldLength/2));
+            rhio.setFloat('/decision/shareY', (fieldWidth/2));
         }
     },
     {
@@ -36,6 +38,11 @@ var menu = [
     },
     {
         'type': 'bool',
+        'label': 'Ball position is shared',
+        'node': '/decision/ballIsShared'
+    },
+    {
+        'type': 'bool',
         'label': 'Should let play (team)',
         'node': '/decision/shouldLetPlayTeam'
     },
@@ -47,6 +54,25 @@ var menu = [
         'readOnly': true,
         'label': 'Should let play',
         'node': '/decision/shouldLetPlay'
+    },
+    {
+        'type': 'bool',
+        'readOnly': true,
+        'label': 'Is auto placing',
+        'node': '/moves/robocup/autoKickOff',
+        'draw': function(ctx) {
+            var x = rhio.getFloat('/moves/robocup/autoTargetX')/100.0;
+            var y = rhio.getFloat('/moves/robocup/autoTargetY')/100.0;
+
+            ctx.beginPath();
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 0.05;
+            ctx.moveTo(x-0.1, y-0.1);
+            ctx.lineTo(x+0.1, y+0.1);
+            ctx.moveTo(x+0.1, y-0.1);
+            ctx.lineTo(x-0.1, y+0.1);
+            ctx.stroke();
+        }
     },
     {
         "type": "separator"
@@ -80,6 +106,8 @@ var robotYaw = 0;
 // Ball position
 var ballX = 0;
 var ballY = 0;
+var sharedBallX = 0;
+var sharedBallY = 0;
 
 function redraw()
 {
@@ -182,7 +210,23 @@ function redraw()
     ctx.arc(ballX, ballY, 0.1, 0, Math.PI*2);
     ctx.stroke();
     ctx.fill();
+
+    // Drawing the shared ball
+    ctx.beginPath();
+    ctx.strokeStyle = '#333';
+    ctx.fillStyle = '#16c0f8';
+    ctx.moveTo(sharedBallX, sharedBallY);
+    ctx.arc(sharedBallX, sharedBallY, 0.1, 0, Math.PI*2);
+    ctx.stroke();
+    ctx.fill();
+
     ctx.restore();
+
+    for (var k in menu) {
+        if ('draw' in menu[k]) {
+            menu[k].draw(ctx);
+        }
+    }
     
     ctx.restore();
 }
@@ -195,6 +239,8 @@ function update()
     robotYaw = rhio.getFloat('/localisation/fieldOrientation');
     ballX = rhio.getFloat('/localisation/ballFieldX');
     ballY = rhio.getFloat('/localisation/ballFieldY');
+    sharedBallX = rhio.getFloat("/decision/shareX");
+    sharedBallY = rhio.getFloat("/decision/shareY");
 
     // Getting the moves
     moves = rhio.cmd('/moves/moves');
@@ -282,6 +328,12 @@ function updateBallPosition(x, y)
     rhio.cmd('/localisation/fakeBall '+x+' '+y);
 }
 
+function updateSharedBallPosition(x, y)
+{
+    rhio.setFloat('/decision/shareX', x);
+    rhio.setFloat('/decision/shareY', y);
+}
+
 $(document).ready(function() {
     // Initializing Canvas
     field = document.getElementById('field');
@@ -306,6 +358,8 @@ $(document).ready(function() {
         if (e.which == 1) {
             if (near(pos, ballX, ballY)) {
                 dragging = 'ball';
+            } else if (near(pos, sharedBallX, sharedBallY)) {
+                dragging = 'shared';
             } else if (near(pos, robotX, robotY)) {
                 dragging = 'robot';
             } else {
@@ -327,6 +381,8 @@ $(document).ready(function() {
 
         if (dragging == 'ball') {
             updateBallPosition(pos[0], pos[1]);
+        } else if (dragging == 'shared') {
+            updateSharedBallPosition(pos[0], pos[1]);
         } else if (dragging == 'robot') {
             updateRobotPosition(pos[0]-prev[0], pos[1]-prev[1], 0);
         } else if (rotating == 'robot') {

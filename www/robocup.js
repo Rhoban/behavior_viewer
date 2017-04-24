@@ -43,11 +43,6 @@ var menu = [
     },
     {
         'type': 'bool',
-        'label': 'Should let play (team)',
-        'node': '/decision/shouldLetPlayTeam'
-    },
-    {
-        'type': 'bool',
         'label': 'Am I handled ?',
         'node': '/decision/handled'
     },
@@ -59,6 +54,8 @@ var menu = [
             var x = rhio.getFloat('/moves/robocup/autoTargetX')/100.0;
             var y = rhio.getFloat('/moves/robocup/autoTargetY')/100.0;
 
+            ctx.save();
+            ctx.globalAlpha=0.5;
             ctx.beginPath();
             ctx.strokeStyle = '#000';
             ctx.lineWidth = 0.05;
@@ -67,6 +64,7 @@ var menu = [
             ctx.moveTo(x+0.1, y-0.1);
             ctx.lineTo(x-0.1, y+0.1);
             ctx.stroke();
+            ctx.restore();
         }
     },
     {
@@ -82,6 +80,11 @@ var menu = [
         'readOnly': true,
         'label': 'Should let play',
         'node': '/decision/shouldLetPlay'
+    },
+    {
+        'type': 'bool',
+        'label': 'Should let play (team)',
+        'node': '/decision/shouldLetPlayTeam'
     },
     {
         "type": "separator"

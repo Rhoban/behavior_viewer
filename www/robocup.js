@@ -47,17 +47,12 @@ var menu = [
         'node': '/decision/shouldLetPlayTeam'
     },
     {
-        "type": "separator"
+        'type': 'bool',
+        'label': 'Am I handled ?',
+        'node': '/decision/handled'
     },
     {
         'type': 'bool',
-        'readOnly': true,
-        'label': 'Should let play',
-        'node': '/decision/shouldLetPlay'
-    },
-    {
-        'type': 'bool',
-        'readOnly': true,
         'label': 'Is auto placing',
         'node': '/moves/robocup/autoKickOff',
         'draw': function(ctx) {
@@ -73,6 +68,20 @@ var menu = [
             ctx.lineTo(x-0.1, y+0.1);
             ctx.stroke();
         }
+    },
+    {
+        'type': 'bool',
+        'label': 'Is goal keeper',
+        'node': '/moves/robocup/goalKeeper',
+    },
+    {
+        "type": "separator"
+    },
+    {
+        'type': 'bool',
+        'readOnly': true,
+        'label': 'Should let play',
+        'node': '/decision/shouldLetPlay'
     },
     {
         "type": "separator"
@@ -428,7 +437,7 @@ $(document).ready(function() {
             html += '<button class="menu_'+k+' btn btn-primary">'+entry.label+'</button><br/>';
         } else if (entry.type == 'bool') {
             var checked = rhio.getBool(entry.node);
-            html += '<label class="menu_'+k+'';
+            html += '<label title="'+entry.node+'" class="menu_'+k+'';
                 if ('readOnly' in entry) {
                     html += ' readonly';
             }

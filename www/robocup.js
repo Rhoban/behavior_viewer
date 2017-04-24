@@ -111,12 +111,16 @@ var goalAreaWidth = 5;
 var robotX = 0;
 var robotY = 0;
 var robotYaw = 0;
+var robotHeadYaw = 0;
 
 // Ball position
 var ballX = 0;
 var ballY = 0;
 var sharedBallX = 0;
 var sharedBallY = 0;
+
+// Camera aperture
+var cameraAperture = 0;
 
 function redraw()
 {
@@ -208,6 +212,21 @@ function redraw()
     ctx.lineTo(0, 0.3);
     ctx.stroke();
 
+    // Camera cone
+    ctx.save();
+    ctx.beginPath();
+    ctx.rotate(robotHeadYaw*Math.PI/180);
+    ctx.fillStyle = '#aaa';
+    ctx.globalAlpha=0.4;
+
+
+    ctx.moveTo(0,0);
+    ctx.lineTo(50*Math.cos(cameraAperture/2),50*Math.sin(cameraAperture/2));
+    ctx.lineTo(50*Math.cos(cameraAperture/2),-50*Math.sin(cameraAperture/2));
+    ctx.lineTo(0,0);
+    ctx.fill();
+    ctx.restore();
+
     ctx.restore();
     
     ctx.save();
@@ -246,6 +265,7 @@ function update()
     robotX = rhio.getFloat('/localisation/fieldX');
     robotY = rhio.getFloat('/localisation/fieldY');
     robotYaw = rhio.getFloat('/localisation/fieldOrientation');
+    robotHeadYaw = rhio.getFloat('/lowlevel/head_yaw/goalPosition');
     ballX = rhio.getFloat('/localisation/ballFieldX');
     ballY = rhio.getFloat('/localisation/ballFieldY');
     sharedBallX = rhio.getFloat("/decision/shareX");
@@ -352,6 +372,8 @@ $(document).ready(function() {
     setInterval(function() {
         update();
     }, 50);
+
+    cameraAperture = rhio.getFloat('/model/cameraModelAngularWidth')*Math.PI/180;
 
     // Handling dragging
     var dragging = null;

@@ -31,7 +31,7 @@ robot.
 If you click on moves, it will stop/start it.
 
 You can monitor the robot decisions on the right, and edit it if
-you are in fake mode (it will have no effect else).
+you are in fake mode (it will have no effect otherwise).
 
 If you want to change the menu, you can edit `www/robocup.js`, the header
 of this file contains sections of moves and variables that are monitored.

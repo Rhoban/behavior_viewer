@@ -2,7 +2,8 @@
 // Monitored moves
 var monitorMoves = [
     'robocup', 'approach', 'search',
-    'standup', 'head', 'walk', 'placer', 'goal_keeper'
+    'standup', 'head', 'walk', 'placer',
+    "learned_approach", 'goal_keeper'
 ];
 
 // Menu panel

@@ -21,22 +21,36 @@ Rhio::~Rhio()
 
 bool Rhio::getBool(QString name)
 {
-    return client->getBool(name.toStdString());
+    try {
+        return client->getBool(name.toStdString());
+    } catch (std::runtime_error) {
+        return false;
+    }
 }
 
 void Rhio::setBool(QString name, bool v)
 {
-    client->setBool(name.toStdString(), v);
+    try {
+        client->setBool(name.toStdString(), v);
+    } catch (std::runtime_error) {
+    }
 }
 
 float Rhio::getFloat(QString name)
 {
-    return client->getFloat(name.toStdString());
+    try {
+        return client->getFloat(name.toStdString());
+    } catch (std::runtime_error) {
+        return 0;
+    }
 }
 
 void Rhio::setFloat(QString name, float f)
 {
-    client->setFloat(name.toStdString(), f);
+    try {
+        client->setFloat(name.toStdString(), f);
+    } catch (std::runtime_error) {
+    }
 }
 
 QString Rhio::cmd(QString cmd)

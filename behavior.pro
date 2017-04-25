@@ -34,8 +34,4 @@ RESOURCES += \
     www.qrc
 
 DISTFILES += \
-    www/dist/fonts/glyphicons-halflings-regular.eot \
-    www/dist/fonts/glyphicons-halflings-regular.woff \
-    www/dist/fonts/glyphicons-halflings-regular.woff2 \
-    www/dist/fonts/glyphicons-halflings-regular.ttf \
-    www/dist/fonts/glyphicons-halflings-regular.svg
+    www/robocup.js

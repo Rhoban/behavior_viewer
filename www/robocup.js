@@ -2,7 +2,8 @@
 // Monitored moves
 var monitorMoves = [
     'robocup', 'approach', 'search',
-    'standup', 'head', 'walk', 'placer', "learned_approach"
+    'standup', 'head', 'walk', 'placer',
+    "learned_approach", 'goal_keeper'
 ];
 
 // Menu panel
@@ -14,10 +15,41 @@ var menu = [
         'action': function() {
             rhio.cmd('/localisation/resetPosition');
             rhio.cmd('/localisation/fakeBall 1 0');
+            rhio.setFloat('/decision/shareX', (fieldLength/2));
+            rhio.setFloat('/decision/shareY', (fieldWidth/2));
         }
     },
     {
         "type": "separator"
+    },
+    {
+        'type': 'bool',
+        'label': 'Is goal keeper',
+        'node': '/moves/robocup/goalKeeper',
+    },
+    {
+        'type': 'bool',
+        'label': 'Is auto placing',
+        'node': '/moves/robocup/autoKickOff',
+        'draw': function(ctx) {
+            var x = rhio.getFloat('/moves/robocup/autoTargetX')/100.0;
+            var y = rhio.getFloat('/moves/robocup/autoTargetY')/100.0;
+
+            ctx.save();
+            ctx.globalAlpha=0.5;
+            ctx.beginPath();
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 0.05;
+            ctx.moveTo(x-0.1, y-0.1);
+            ctx.lineTo(x+0.1, y+0.1);
+            ctx.moveTo(x+0.1, y-0.1);
+            ctx.lineTo(x-0.1, y+0.1);
+            ctx.stroke();
+            ctx.restore();
+        }
+    },
+    {
+        'type': 'separator'
     },
     {
         'type': 'bool',
@@ -33,6 +65,16 @@ var menu = [
         'type': 'bool',
         'label': 'Is fallen',
         'node': '/decision/isFallen'
+    },
+    {
+        'type': 'bool',
+        'label': 'Ball position is shared',
+        'node': '/decision/ballIsShared'
+    },
+    {
+        'type': 'bool',
+        'label': 'Am I handled ?',
+        'node': '/decision/handled'
     },
     {
         'type': 'bool',
@@ -76,10 +118,16 @@ var goalAreaWidth = 5;
 var robotX = 0;
 var robotY = 0;
 var robotYaw = 0;
+var robotHeadYaw = 0;
 
 // Ball position
 var ballX = 0;
 var ballY = 0;
+var sharedBallX = 0;
+var sharedBallY = 0;
+
+// Camera aperture
+var cameraAperture = 0;
 
 function redraw()
 {
@@ -171,6 +219,21 @@ function redraw()
     ctx.lineTo(0, 0.3);
     ctx.stroke();
 
+    // Camera cone
+    ctx.save();
+    ctx.beginPath();
+    ctx.rotate(robotHeadYaw*Math.PI/180);
+    ctx.fillStyle = '#aaa';
+    ctx.globalAlpha=0.4;
+
+
+    ctx.moveTo(0,0);
+    ctx.lineTo(50*Math.cos(cameraAperture/2),50*Math.sin(cameraAperture/2));
+    ctx.lineTo(50*Math.cos(cameraAperture/2),-50*Math.sin(cameraAperture/2));
+    ctx.lineTo(0,0);
+    ctx.fill();
+    ctx.restore();
+
     ctx.restore();
     
     ctx.save();
@@ -182,7 +245,23 @@ function redraw()
     ctx.arc(ballX, ballY, 0.1, 0, Math.PI*2);
     ctx.stroke();
     ctx.fill();
+
+    // Drawing the shared ball
+    ctx.beginPath();
+    ctx.strokeStyle = '#333';
+    ctx.fillStyle = '#16c0f8';
+    ctx.moveTo(sharedBallX, sharedBallY);
+    ctx.arc(sharedBallX, sharedBallY, 0.1, 0, Math.PI*2);
+    ctx.stroke();
+    ctx.fill();
+
     ctx.restore();
+
+    for (var k in menu) {
+        if ('draw' in menu[k]) {
+            menu[k].draw(ctx);
+        }
+    }
     
     ctx.restore();
 }
@@ -193,8 +272,11 @@ function update()
     robotX = rhio.getFloat('/localisation/fieldX');
     robotY = rhio.getFloat('/localisation/fieldY');
     robotYaw = rhio.getFloat('/localisation/fieldOrientation');
+    robotHeadYaw = rhio.getFloat('/lowlevel/head_yaw/goalPosition');
     ballX = rhio.getFloat('/localisation/ballFieldX');
     ballY = rhio.getFloat('/localisation/ballFieldY');
+    sharedBallX = rhio.getFloat("/decision/shareX");
+    sharedBallY = rhio.getFloat("/decision/shareY");
 
     // Getting the moves
     moves = rhio.cmd('/moves/moves');
@@ -282,6 +364,12 @@ function updateBallPosition(x, y)
     rhio.cmd('/localisation/fakeBall '+x+' '+y);
 }
 
+function updateSharedBallPosition(x, y)
+{
+    rhio.setFloat('/decision/shareX', x);
+    rhio.setFloat('/decision/shareY', y);
+}
+
 $(document).ready(function() {
     // Initializing Canvas
     field = document.getElementById('field');
@@ -292,20 +380,23 @@ $(document).ready(function() {
         update();
     }, 50);
 
+    cameraAperture = rhio.getFloat('/model/cameraModelAngularWidth')*Math.PI/180;
+
     // Handling dragging
     var dragging = null;
     var rotating = null;
     var prev;
-    var base;
+    var saveRobotPos;
 
     $('#field').mousedown(function(e) {
         var pos = eventToM(e);
         prev = pos;
-        base = pos;
 
         if (e.which == 1) {
             if (near(pos, ballX, ballY)) {
                 dragging = 'ball';
+            } else if (near(pos, sharedBallX, sharedBallY)) {
+                dragging = 'shared';
             } else if (near(pos, robotX, robotY)) {
                 dragging = 'robot';
             } else {
@@ -316,7 +407,7 @@ $(document).ready(function() {
             if (near(pos, robotX, robotY, 2)) {
                 var a = Math.atan2(pos[1]-robotY, pos[0]-robotX);
                 var y = robotYaw;
-                base = [a, y];
+                saveRobotPos = [robotX, robotY];
                 rotating = 'robot';
             }
         }
@@ -327,13 +418,13 @@ $(document).ready(function() {
 
         if (dragging == 'ball') {
             updateBallPosition(pos[0], pos[1]);
+        } else if (dragging == 'shared') {
+            updateSharedBallPosition(pos[0], pos[1]);
         } else if (dragging == 'robot') {
-            updateRobotPosition(pos[0]-prev[0], pos[1]-prev[1], 0);
+            updateRobotPosition(pos[0], pos[1], robotYaw);
         } else if (rotating == 'robot') {
             var a = Math.atan2(pos[1]-robotY, pos[0]-robotX);
-            var old = base[0];
-            updateRobotPosition(0, 0, a-old);
-            base[0] = a;
+            updateRobotPosition(saveRobotPos[0], saveRobotPos[1], a);
         }
 
         prev = pos;
@@ -372,7 +463,7 @@ $(document).ready(function() {
             html += '<button class="menu_'+k+' btn btn-primary">'+entry.label+'</button><br/>';
         } else if (entry.type == 'bool') {
             var checked = rhio.getBool(entry.node);
-            html += '<label class="menu_'+k+'';
+            html += '<label title="'+entry.node+'" class="menu_'+k+'';
                 if ('readOnly' in entry) {
                     html += ' readonly';
             }

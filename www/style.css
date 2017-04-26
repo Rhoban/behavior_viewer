@@ -36,12 +36,13 @@ body {
 
 .move {
     float:left;
-    width:120px;
-    margin:3px;
-    padding:5px;
+    width:90px;
+    margin:1px;
+    padding:2px;
     border-radius:5px;
     color:white;
     text-align:center;
+    font-size:85%;
 }
 
 .move .name {

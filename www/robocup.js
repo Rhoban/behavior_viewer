@@ -1,10 +1,10 @@
 
 // Monitored moves
 var monitorMoves = [
-    'standup', 'head', 'walk', 'placer', 'goal_keeper'
+    'standup', 'head', 'walk', 'placer', 'goal_keeper',
     'robocup', 'approach', 'search', 'playing',
     'standup', 'head', 'walk', 'placer',
-    'learned_approach', 'goal_keeper'
+    'learned_approach', 'goal_keeper', 'kick_controler'
 ];
 
 // Menu panel
@@ -130,6 +130,17 @@ var sharedBallY = 0;
 // Camera aperture
 var cameraAperture = 0;
 
+// Moves
+var moveStates = {};
+
+function rotate(x, y, a)
+{
+   return [
+       Math.cos(a)*x - Math.sin(a)*y,
+       Math.sin(a)*x + Math.cos(a)*y
+   ]
+}
+
 function redraw()
 {
     ctx.clearRect(0, 0, field.width, field.height);
@@ -236,6 +247,39 @@ function redraw()
     ctx.restore();
 
     ctx.restore();
+
+    // Drawing kick arrows
+    if ('kick_controler' in moveStates) {
+        if (moveStates['kick_controler'] == 'running') {
+            var dir = rhio.getFloat('/moves/kick_controler/kick_dir')*Math.PI/180;
+            var kickType = rhio.getInt('/moves/kick_controler/kick_type');
+            ctx.save();
+
+            var T = [1, 0];
+            ctx.strokeStyle = '#333';
+            if (kickType == 0) { // Lateral
+                ctx.strokeStyle = '#00e';
+            }
+            if (kickType == 2) { // Powerful
+                T = [2, 0];
+            }
+
+            var A = rotate(T[0], T[1], dir);
+            var B = rotate(T[0]-0.2, T[1]-0.2, dir);
+            var C = rotate(T[0]-0.2, T[1]+0.2, dir);
+
+            ctx.globalAlpha = 0.3;
+            ctx.beginPath();
+            ctx.moveTo(ballX, ballY);
+            ctx.lineTo(ballX+A[0], ballY+A[1]);
+            ctx.lineTo(ballX+B[0], ballY+B[1]);
+            ctx.moveTo(ballX+A[0], ballY+A[1]);
+            ctx.lineTo(ballX+C[0], ballY+C[1]);
+            ctx.stroke();
+
+            ctx.restore();
+        }
+    }
     
     ctx.save();
     ctx.beginPath();
@@ -288,6 +332,7 @@ function update()
         if (parts.length >= 2) {
             var name = parts[0];
             var status = parts[1];
+            moveStates[name] = status;
 
             var div = $('.move_'+name);
 

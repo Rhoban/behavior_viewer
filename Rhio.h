@@ -22,6 +22,8 @@ public slots:
     void setBool(QString name, bool v);
     float getFloat(QString name);
     void setFloat(QString name, float f);
+    void setInt(QString name, int i);
+    int getInt(QString name);
     QString cmd(QString cmd);
 
 private:

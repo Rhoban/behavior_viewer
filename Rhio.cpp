@@ -53,6 +53,23 @@ void Rhio::setFloat(QString name, float f)
     }
 }
 
+void Rhio::setInt(QString name, int i)
+{
+    try {
+        client->setInt(name.toStdString(), i);
+    } catch (std::runtime_error) {
+    }
+}
+
+int Rhio::getInt(QString name)
+{
+    try {
+        return client->getInt(name.toStdString());
+    } catch (std::runtime_error) {
+        return 0;
+    }
+}
+
 QString Rhio::cmd(QString cmd)
 {
     QStringList list = cmd.split(" ");

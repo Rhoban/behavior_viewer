@@ -1,9 +1,8 @@
 
 // Monitored moves
 var monitorMoves = [
-    'standup', 'head', 'walk', 'placer', 'goal_keeper',
     'robocup', 'approach', 'search', 'playing',
-    'standup', 'head', 'walk', 'placer',
+    'standup', 'head', 'walk', 'placer', 'goal_keeper',
     'learned_approach', 'goal_keeper', 'kick_controler'
 ];
 

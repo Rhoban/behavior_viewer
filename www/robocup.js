@@ -3,7 +3,8 @@
 var monitorMoves = [
     'robocup', 'approach', 'search', 'playing',
     'standup', 'head', 'walk', 'placer', 'goal_keeper',
-    'learned_approach', 'goal_keeper', 'kick_controler'
+    'learned_approach', 'goal_keeper', 'kick_controler',
+    'approach_potential'
 ];
 
 // Menu panel

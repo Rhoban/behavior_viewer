@@ -20,9 +20,12 @@ public:
 
 public slots:
     void on_actionInspector_triggered();
+    void on_actionAccessibility_triggered();
 
 private:
+    bool accessibility;
     QAction *inspectorAction;
+    QAction *accessibilityAction;
     QWebInspector *inspector;
     Ui::MainWindow *ui;
     Rhio *rhio;

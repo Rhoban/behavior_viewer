@@ -1,4 +1,7 @@
 
+// Field
+var field = 'official';
+
 // Monitored moves
 var monitorMoves = [
     'robocup', 'approach', 'search', 'playing',
@@ -97,7 +100,7 @@ var menu = [
     {
         'type': 'zone',
         'update': function(div) {
-            div.html('<pre>'+rhio.cmd('/referee/playing')+'</pre>');
+            div.html('<pre>'+rhio.cmd('/referee/infoPlaying')+'</pre>');
         }
     }
 ];
@@ -106,23 +109,27 @@ var menu = [
 var field;
 var ctx;
 
-// Field dimensions (Robocup official)
-var fieldLength = 9;
-var fieldWidth = 6;
-var fieldBorder = 0.5;
-var goalWidth = 2.6;
-var penaltyMark = 2.1;
-var goalAreaLength = 1;
-var goalAreaWidth = 5;
+if (field == 'official') {
+    // Field dimensions (Robocup official)
+    var fieldLength = 9;
+    var fieldWidth = 6;
+    var fieldBorder = 0.5;
+    var goalWidth = 2.6;
+    var penaltyMark = 2.1;
+    var goalAreaLength = 1;
+    var goalAreaWidth = 5;
+}
 
-// Field dimensions (Eirlab)
-//var fieldLength = 8;
-//var fieldWidth = 5.9;
-//var fieldBorder = 0.5;
-//var goalWidth = 2.6;
-//var penaltyMark = 1.8;
-//var goalAreaLength = 0.6;
-//var goalAreaWidth = 3.45;
+if (field == 'eirlab') {
+    // Field dimensions (Eirlab)
+    //var fieldLength = 8;
+    //var fieldWidth = 5.9;
+    //var fieldBorder = 0.5;
+    //var goalWidth = 2.6;
+    //var penaltyMark = 1.8;
+    //var goalAreaLength = 0.6;
+    //var goalAreaWidth = 3.45;
+}
 
 // Robot position
 var robotX = 0;

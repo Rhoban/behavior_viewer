@@ -277,7 +277,7 @@ function redraw()
                 ctx.strokeStyle = '#00e';
             }
             if (kickType == 2) { // Powerful
-                T = [2, 0];
+                T = [4, 0];
             }
 
             var A = rotate(T[0], T[1], dir);

@@ -5,7 +5,7 @@ var field = 'official';
 // Monitored moves
 var monitorMoves = [
     'robocup', 'approach', 'search', 'playing',
-    'standup', 'head', 'walk', 'placer', 'goal_keeper',
+    'standup', 'Head2', 'walk', 'placer', 'goal_keeper',
     'learned_approach', 'goal_keeper', 'kick_controler',
     'approach_potential', 'penalty'
 ];
@@ -271,13 +271,14 @@ function redraw()
             var kickType = rhio.getInt('/moves/kick_controler/kick_type');
             ctx.save();
 
-            var T = [1, 0];
+            var T = [rhio.getFloat('/moves/walk/smallKickDist'), 0];
             ctx.strokeStyle = '#333';
             if (kickType == 0) { // Lateral
+                T = [rhio.getFloat('/moves/walk/lateralKickDist'), 0];
                 ctx.strokeStyle = '#00e';
             }
             if (kickType == 2) { // Powerful
-                T = [4, 0];
+                T = [rhio.getFloat('/moves/walk/kickDist'), 0];
             }
 
             var A = rotate(T[0], T[1], dir);
@@ -332,7 +333,7 @@ function update()
     // Getting field positions
     robotX = rhio.getFloat('/localisation/fieldX');
     robotY = rhio.getFloat('/localisation/fieldY');
-    robotYaw = rhio.getFloat('/localisation/fieldOrientation');
+    robotYaw = rhio.getFloat('/localisation/fieldOrientation')*Math.PI/180;
     robotHeadYaw = rhio.getFloat('/lowlevel/head_yaw/goalPosition');
     ballX = rhio.getFloat('/localisation/ballFieldX');
     ballY = rhio.getFloat('/localisation/ballFieldY');

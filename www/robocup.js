@@ -1,6 +1,6 @@
 
 // Field
-var field = 'official';
+var fieldType = 'eirlab';
 
 // Monitored moves
 var monitorMoves = [
@@ -109,7 +109,7 @@ var menu = [
 var field;
 var ctx;
 
-if (field == 'official') {
+if (fieldType == 'official') {
     // Field dimensions (Robocup official)
     var fieldLength = 9;
     var fieldWidth = 6;
@@ -120,15 +120,15 @@ if (field == 'official') {
     var goalAreaWidth = 5;
 }
 
-if (field == 'eirlab') {
+if (fieldType == 'eirlab') {
     // Field dimensions (Eirlab)
-    //var fieldLength = 8;
-    //var fieldWidth = 5.9;
-    //var fieldBorder = 0.5;
-    //var goalWidth = 2.6;
-    //var penaltyMark = 1.8;
-    //var goalAreaLength = 0.6;
-    //var goalAreaWidth = 3.45;
+    var fieldLength = 8;
+    var fieldWidth = 5.9;
+    var fieldBorder = 0.5;
+    var goalWidth = 2.6;
+    var penaltyMark = 1.8;
+    var goalAreaLength = 0.6;
+    var goalAreaWidth = 3.45;
 }
 
 // Robot position
@@ -271,14 +271,14 @@ function redraw()
             var kickType = rhio.getInt('/moves/kick_controler/kick_type');
             ctx.save();
 
-            var T = [rhio.getFloat('/moves/walk/smallKickDist'), 0];
+            var T = [rhio.getFloat('/moves/kick/smallKickDist'), 0];
             ctx.strokeStyle = '#333';
             if (kickType == 0) { // Lateral
-                T = [rhio.getFloat('/moves/walk/lateralKickDist'), 0];
+                T = [rhio.getFloat('/moves/kick/lateralKickDist'), 0];
                 ctx.strokeStyle = '#00e';
             }
             if (kickType == 2) { // Powerful
-                T = [rhio.getFloat('/moves/walk/kickDist'), 0];
+                T = [rhio.getFloat('/moves/kick/kickDist'), 0];
             }
 
             var A = rotate(T[0], T[1], dir);

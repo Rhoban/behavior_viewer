@@ -254,7 +254,6 @@ function redraw()
     ctx.fillStyle = '#aaa';
     ctx.globalAlpha=0.4;
 
-
     ctx.moveTo(0,0);
     ctx.lineTo(50*Math.cos(cameraAperture/2),50*Math.sin(cameraAperture/2));
     ctx.lineTo(50*Math.cos(cameraAperture/2),-50*Math.sin(cameraAperture/2));
@@ -294,6 +293,45 @@ function redraw()
             ctx.lineTo(ballX+C[0], ballY+C[1]);
             ctx.stroke();
 
+            ctx.restore();
+        }
+    }
+    
+    // Path
+    if ('placer' in moveStates) {
+        if (moveStates['placer'] == 'running') {
+            ctx.save();
+            var data = rhio.getString('/moves/placer/path').trim();
+            if (data) {
+                var path = eval(data);
+                var first = true;
+                ctx.strokeStyle = '#ff0';
+                ctx.lineWidth = 0.03;
+                ctx.beginPath();
+                for (var k in path) {
+                    if (first) {
+                        ctx.moveTo(path[k][0]/100., path[k][1]/100.);
+                    } else {
+                        ctx.lineTo(path[k][0]/100., path[k][1]/100.);
+                    }
+                    first = false;
+                }
+                ctx.stroke();
+            }
+            ctx.restore();
+
+            var x = rhio.getFloat('/moves/placer/tmpX')/100.0;
+            var y = rhio.getFloat('/moves/placer/tmpY')/100.0;
+
+            ctx.save();
+            ctx.beginPath();
+            ctx.strokeStyle = '#f00';
+            ctx.lineWidth = 0.02;
+            ctx.moveTo(x-0.05, y-0.05);
+            ctx.lineTo(x+0.05, y+0.05);
+            ctx.moveTo(x+0.05, y-0.05);
+            ctx.lineTo(x-0.05, y+0.05);
+            ctx.stroke();
             ctx.restore();
         }
     }

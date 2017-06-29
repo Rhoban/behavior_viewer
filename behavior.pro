@@ -21,7 +21,7 @@ SOURCES += main.cpp\
 WORKSPACE = $$(HOME)/workspace
 QMAKE_RPATHDIR += $$WORKSPACE/devel_release/lib/
 
-LIBS += -L$$WORKSPACE/devel_release/lib/ -lRhIOClient -lzmq
+LIBS += -L$$WORKSPACE/devel_release/lib/ -lRhIOClient -lRhIOCommon -lzmq
 INCLUDEPATH += $$WORKSPACE/src/rhoban/rhio/Client/src
 INCLUDEPATH += $$WORKSPACE/src/rhoban/rhio/Common/src
 INCLUDEPATH += $$WORKSPACE/src/rhobandeps/libzmq/include

@@ -1,12 +1,19 @@
+#include <sstream>
 #include <QStringList>
 #include "Rhio.h"
 
-Rhio::Rhio(std::string server)
+Rhio::Rhio(std::string server, unsigned int port)
 {
     // Creating RhIO clients
-    std::cout << "Connecting to " << server << "..." << std::endl;
-    std::string reqServer = "tcp://"+server+":"+ServerRepPort;
-    std::string subServer = "tcp://"+server+":"+ServerPubPort;
+    std::cout << "Connecting to " << server << " port " << port << "..." << std::endl;
+
+    std::stringstream ss;
+    ss << "tcp://" << server << ":" << port;
+    std::string subServer = ss.str();;
+    ss.str("");
+    ss << "tcp://" << server << ":" << (port+1);
+    std::string reqServer = ss.str();
+
     client = new ClientReq(reqServer);
     clientSub = new ClientSub(subServer);
 
@@ -58,6 +65,15 @@ void Rhio::setInt(QString name, int i)
     try {
         client->setInt(name.toStdString(), i);
     } catch (std::runtime_error) {
+    }
+}
+
+QString Rhio::getString(QString name)
+{
+    try {
+        return QString::fromStdString(client->getStr(name.toStdString()));
+    } catch (std::runtime_error) {
+        return "";
     }
 }
 

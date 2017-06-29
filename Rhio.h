@@ -12,7 +12,7 @@ class Rhio : public QObject
     Q_OBJECT
 
 public:
-    Rhio(std::string server);
+    Rhio(std::string server, unsigned int port);
     virtual ~Rhio();
 
 signals:
@@ -24,6 +24,7 @@ public slots:
     void setFloat(QString name, float f);
     void setInt(QString name, int i);
     int getInt(QString name);
+    QString getString(QString name);
     QString cmd(QString cmd);
 
 private:

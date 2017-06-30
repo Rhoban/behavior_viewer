@@ -21,11 +21,14 @@ public:
 public slots:
     void on_actionInspector_triggered();
     void on_actionAccessibility_triggered();
+    void on_actionSuperBigleux_triggered();
 
-private:
+ private:
     bool accessibility;
+    bool superBigleuxMode;
     QAction *inspectorAction;
     QAction *accessibilityAction;
+    QAction *superBigleuxAction;
     QWebInspector *inspector;
     Ui::MainWindow *ui;
     Rhio *rhio;

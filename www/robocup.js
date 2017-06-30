@@ -82,6 +82,11 @@ var menu = [
     },
     {
         'type': 'bool',
+        'label': 'Am I the nearest?',
+        'node': '/decision/iAmTheNearest'
+    },
+    {
+        'type': 'bool',
         'label': 'Should let play (team)',
         'node': '/decision/shouldLetPlayTeam'
     },
@@ -270,14 +275,14 @@ function redraw()
             var kickType = rhio.getInt('/moves/kick_controler/kick_type');
             ctx.save();
 
-            var T = [rhio.getFloat('/moves/kick/smallKickDist'), 0];
+            var T = [rhio.getFloat('/moves/kick/kickDist'), 0];
             ctx.strokeStyle = '#333';
             if (kickType == 0) { // Lateral
                 T = [rhio.getFloat('/moves/kick/lateralKickDist'), 0];
                 ctx.strokeStyle = '#00e';
             }
-            if (kickType == 2) { // Powerful
-                T = [rhio.getFloat('/moves/kick/kickDist'), 0];
+            if (kickType == 1) { // Small
+                T = [rhio.getFloat('/moves/kick/smallKickDist'), 0];
             }
 
             var A = rotate(T[0], T[1], dir);
@@ -496,10 +501,10 @@ $(document).ready(function() {
         if (e.which == 1) {
             if (near(pos, ballX, ballY)) {
                 dragging = 'ball';
-            } else if (near(pos, sharedBallX, sharedBallY)) {
-                dragging = 'shared';
             } else if (near(pos, robotX, robotY)) {
                 dragging = 'robot';
+            } else if (near(pos, sharedBallX, sharedBallY)) {
+                dragging = 'shared';
             } else {
                 dragging = null;
             }

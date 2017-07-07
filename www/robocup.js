@@ -5,9 +5,10 @@ var fieldType = 'eirlab';
 // Monitored moves
 var monitorMoves = [
     'robocup', 'approach', 'search', 'playing',
-    'standup', 'Head2', 'walk', 'placer', 'goal_keeper',
+    'standup', 'head', 'walk', 'placer', 'goal_keeper',
     'learned_approach', 'goal_keeper', 'kick_controler',
-    'approach_potential', 'penalty'
+    'q_kick_controler',
+    'approach_potential', 'penalty', 'strategy'
 ];
 
 // Menu panel
@@ -269,36 +270,34 @@ function redraw()
     ctx.restore();
 
     // Drawing kick arrows
-    if ('kick_controler' in moveStates) {
-        if (moveStates['kick_controler'] == 'running') {
-            var dir = rhio.getFloat('/moves/kick_controler/kick_dir')*Math.PI/180;
-            var kickType = rhio.getInt('/moves/kick_controler/kick_type');
-            ctx.save();
+    if ('strategy' in moveStates) {
+        if (moveStates['strategy'] == 'running') {
+            var approach = rhio.getString('/moves/strategy/activeApproach');
+            if (approach != 'none' && approach != 'conflict') {
+                var kickTargetX = rhio.getFloat('/moves/strategy/kickTargetX');
+                var kickTargetY = rhio.getFloat('/moves/strategy/kickTargetY');
+                var relX = kickTargetX-ballX;
+                var relY = kickTargetY-ballY;
+               
+                var dir = Math.atan2(relY, relX); 
+                var dist = Math.sqrt(relX*relX + relY*relY);
+                ctx.save();
 
-            var T = [rhio.getFloat('/moves/kick/kickDist'), 0];
-            ctx.strokeStyle = '#333';
-            if (kickType == 0) { // Lateral
-                T = [rhio.getFloat('/moves/kick/lateralKickDist'), 0];
-                ctx.strokeStyle = '#00e';
+                var A = rotate(dist, 0, dir);
+                var B = rotate(dist-0.2, -0.2, dir);
+                var C = rotate(dist-0.2, 0.2, dir);
+
+                ctx.globalAlpha = 0.3;
+                ctx.beginPath();
+                ctx.moveTo(ballX, ballY);
+                ctx.lineTo(ballX+A[0], ballY+A[1]);
+                ctx.lineTo(ballX+B[0], ballY+B[1]);
+                ctx.moveTo(ballX+A[0], ballY+A[1]);
+                ctx.lineTo(ballX+C[0], ballY+C[1]);
+                ctx.stroke();
+
+                ctx.restore();
             }
-            if (kickType == 1) { // Small
-                T = [rhio.getFloat('/moves/kick/smallKickDist'), 0];
-            }
-
-            var A = rotate(T[0], T[1], dir);
-            var B = rotate(T[0]-0.2, T[1]-0.2, dir);
-            var C = rotate(T[0]-0.2, T[1]+0.2, dir);
-
-            ctx.globalAlpha = 0.3;
-            ctx.beginPath();
-            ctx.moveTo(ballX, ballY);
-            ctx.lineTo(ballX+A[0], ballY+A[1]);
-            ctx.lineTo(ballX+B[0], ballY+B[1]);
-            ctx.moveTo(ballX+A[0], ballY+A[1]);
-            ctx.lineTo(ballX+C[0], ballY+C[1]);
-            ctx.stroke();
-
-            ctx.restore();
         }
     }
     

@@ -8,7 +8,7 @@ var monitorMoves = [
     'standup', 'head', 'walk', 'placer', 'goal_keeper',
     'learned_approach', 'goal_keeper', 'kick_controler',
     'q_kick_controler',
-    'approach_potential', 'penalty', 'strategy'
+    'approach_potential', 'penalty'
 ];
 
 // Menu panel
@@ -270,35 +270,31 @@ function redraw()
     ctx.restore();
 
     // Drawing kick arrows
-    if ('strategy' in moveStates) {
-        if (moveStates['strategy'] == 'running') {
-            var approach = rhio.getString('/moves/strategy/activeApproach');
-            if (approach != 'none' && approach != 'conflict') {
-                var kickTargetX = rhio.getFloat('/moves/strategy/kickTargetX');
-                var kickTargetY = rhio.getFloat('/moves/strategy/kickTargetY');
-                var relX = kickTargetX-ballX;
-                var relY = kickTargetY-ballY;
-               
-                var dir = Math.atan2(relY, relX); 
-                var dist = Math.sqrt(relX*relX + relY*relY);
-                ctx.save();
+    var approach = rhio.getString('/strategy/activeApproach');
+    if (approach != 'none' && approach != 'conflict') {
+        var kickTargetX = rhio.getFloat('/strategy/kickTargetX');
+        var kickTargetY = rhio.getFloat('/strategy/kickTargetY');
+        var relX = kickTargetX-ballX;
+        var relY = kickTargetY-ballY;
+       
+        var dir = Math.atan2(relY, relX); 
+        var dist = Math.sqrt(relX*relX + relY*relY);
+        ctx.save();
 
-                var A = rotate(dist, 0, dir);
-                var B = rotate(dist-0.2, -0.2, dir);
-                var C = rotate(dist-0.2, 0.2, dir);
+        var A = rotate(dist, 0, dir);
+        var B = rotate(dist-0.2, -0.2, dir);
+        var C = rotate(dist-0.2, 0.2, dir);
 
-                ctx.globalAlpha = 0.3;
-                ctx.beginPath();
-                ctx.moveTo(ballX, ballY);
-                ctx.lineTo(ballX+A[0], ballY+A[1]);
-                ctx.lineTo(ballX+B[0], ballY+B[1]);
-                ctx.moveTo(ballX+A[0], ballY+A[1]);
-                ctx.lineTo(ballX+C[0], ballY+C[1]);
-                ctx.stroke();
+        ctx.globalAlpha = 0.3;
+        ctx.beginPath();
+        ctx.moveTo(ballX, ballY);
+        ctx.lineTo(ballX+A[0], ballY+A[1]);
+        ctx.lineTo(ballX+B[0], ballY+B[1]);
+        ctx.moveTo(ballX+A[0], ballY+A[1]);
+        ctx.lineTo(ballX+C[0], ballY+C[1]);
+        ctx.stroke();
 
-                ctx.restore();
-            }
-        }
+        ctx.restore();
     }
     
     // Path

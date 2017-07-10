@@ -20,6 +20,7 @@ var menu = [
         'action': function() {
             rhio.cmd('/localisation/resetPosition');
             rhio.cmd('/localisation/fakeBall 1 0');
+            rhio.cmd('/localisation/fakeOpponent '+(fieldLength/2)+' -'+(fieldWidth/2)+'');
             rhio.setFloat('/decision/shareX', (fieldLength/2));
             rhio.setFloat('/decision/shareY', (fieldWidth/2));
         }
@@ -148,6 +149,8 @@ var ballX = 0;
 var ballY = 0;
 var sharedBallX = 0;
 var sharedBallY = 0;
+var opponentX = 0;
+var opponentY = 0;
 
 // Camera aperture
 var cameraAperture = 0;
@@ -354,6 +357,14 @@ function redraw()
     ctx.arc(sharedBallX, sharedBallY, 0.1, 0, Math.PI*2);
     ctx.stroke();
     ctx.fill();
+    
+    ctx.beginPath();
+    ctx.strokeStyle = '#000';
+    ctx.fillStyle = '#666';
+    ctx.moveTo(opponentX, opponentY);
+    ctx.arc(opponentX, opponentY, 0.5, 0, Math.PI*2);
+    ctx.stroke();
+    ctx.fill();
 
     ctx.restore();
 
@@ -377,6 +388,8 @@ function update()
     ballY = rhio.getFloat('/localisation/ballFieldY');
     sharedBallX = rhio.getFloat("/decision/shareX");
     sharedBallY = rhio.getFloat("/decision/shareY");
+    opponentX = rhio.getFloat("/localisation/opponentFieldX");
+    opponentY = rhio.getFloat("/localisation/opponentFieldY");
 
     // Getting the moves
     moves = rhio.cmd('/moves/moves');
@@ -465,6 +478,11 @@ function updateBallPosition(x, y)
     rhio.cmd('/localisation/fakeBall '+x+' '+y);
 }
 
+function updateOpponentPosition(x, y)
+{
+    rhio.cmd('/localisation/fakeOpponent '+x+' '+y);
+}
+
 function updateSharedBallPosition(x, y)
 {
     rhio.setFloat('/decision/shareX', x);
@@ -498,6 +516,8 @@ $(document).ready(function() {
                 dragging = 'ball';
             } else if (near(pos, robotX, robotY)) {
                 dragging = 'robot';
+            } else if (near(pos, opponentX, opponentY)) {
+                dragging = 'opponent';
             } else if (near(pos, sharedBallX, sharedBallY)) {
                 dragging = 'shared';
             } else {
@@ -521,6 +541,8 @@ $(document).ready(function() {
             updateBallPosition(pos[0], pos[1]);
         } else if (dragging == 'shared') {
             updateSharedBallPosition(pos[0], pos[1]);
+        } else if (dragging == 'opponent') {
+            updateOpponentPosition(pos[0], pos[1]);
         } else if (dragging == 'robot') {
             updateRobotPosition(pos[0], pos[1], robotYaw);
         } else if (rotating == 'robot') {

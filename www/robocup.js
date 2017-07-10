@@ -237,7 +237,20 @@ function redraw()
     ctx.lineTo(fieldLength/2, -goalAreaWidth/2);
     ctx.stroke();
 
+    // Opponent 
     ctx.save();
+    ctx.beginPath();
+    ctx.strokeStyle = 'none';
+    ctx.fillStyle = '#666';
+    ctx.globalAlpha = 0.7;
+    ctx.moveTo(opponentX, opponentY);
+    ctx.arc(opponentX, opponentY, 0.5, 0, Math.PI*2);
+    ctx.stroke();
+    ctx.fill();
+    ctx.restore();
+
+    ctx.save();
+
     // Drawing the robot
     ctx.lineWidth = 0.07;
     
@@ -355,14 +368,6 @@ function redraw()
     ctx.fillStyle = '#16c0f8';
     ctx.moveTo(sharedBallX, sharedBallY);
     ctx.arc(sharedBallX, sharedBallY, 0.1, 0, Math.PI*2);
-    ctx.stroke();
-    ctx.fill();
-    
-    ctx.beginPath();
-    ctx.strokeStyle = '#000';
-    ctx.fillStyle = '#666';
-    ctx.moveTo(opponentX, opponentY);
-    ctx.arc(opponentX, opponentY, 0.5, 0, Math.PI*2);
     ctx.stroke();
     ctx.fill();
 

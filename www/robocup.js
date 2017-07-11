@@ -20,7 +20,9 @@ var menu = [
         'action': function() {
             rhio.cmd('/localisation/resetPosition');
             rhio.cmd('/localisation/fakeBall 1 0');
-            rhio.cmd('/localisation/fakeOpponent '+(fieldLength/2)+' -'+(fieldWidth/2)+'');
+            var x = fieldLength/2;
+            var y = -fieldWidth/2;
+            rhio.cmd('/localisation/fakeOpponents '+x+' '+y+' '+(x-1)+' '+y+' '+(x-2)+' '+y);
             rhio.setFloat('/decision/shareX', (fieldLength/2));
             rhio.setFloat('/decision/shareY', (fieldWidth/2));
         }
@@ -149,8 +151,8 @@ var ballX = 0;
 var ballY = 0;
 var sharedBallX = 0;
 var sharedBallY = 0;
-var opponentX = 0;
-var opponentY = 0;
+var opponents = [];
+var opponentsRadius = 0;
 
 // Camera aperture
 var cameraAperture = 0;
@@ -238,17 +240,21 @@ function redraw()
     ctx.stroke();
 
     // Opponent 
-    ctx.save();
-    ctx.beginPath();
-    ctx.strokeStyle = 'none';
-    ctx.fillStyle = '#666';
-    ctx.globalAlpha = 0.7;
-    ctx.moveTo(opponentX, opponentY);
-    ctx.arc(opponentX, opponentY, 0.5, 0, Math.PI*2);
-    ctx.stroke();
-    ctx.fill();
-    ctx.restore();
+    for (var k in opponents) {
+        var opponent = opponents[k];
 
+        ctx.save();
+        ctx.beginPath();
+        ctx.strokeStyle = 'none';
+        ctx.fillStyle = '#666';
+        ctx.globalAlpha = 0.7;
+        ctx.moveTo(opponent[0], opponent[1]);
+        ctx.arc(opponent[0], opponent[1], opponentsRadius, 0, Math.PI*2);
+        ctx.stroke();
+        ctx.fill();
+        ctx.restore();
+    }
+    
     ctx.save();
 
     // Drawing the robot
@@ -393,8 +399,8 @@ function update()
     ballY = rhio.getFloat('/localisation/ballFieldY');
     sharedBallX = rhio.getFloat("/decision/shareX");
     sharedBallY = rhio.getFloat("/decision/shareY");
-    opponentX = rhio.getFloat("/localisation/opponentFieldX");
-    opponentY = rhio.getFloat("/localisation/opponentFieldY");
+    opponents = eval(rhio.getString('/localisation/opponents'));
+    opponentsRadius = rhio.getFloat('/localisation/opponentsRadius');
 
     // Getting the moves
     moves = rhio.cmd('/moves/moves');
@@ -483,9 +489,19 @@ function updateBallPosition(x, y)
     rhio.cmd('/localisation/fakeBall '+x+' '+y);
 }
 
-function updateOpponentPosition(x, y)
+function updateOpponentPosition(k, x, y)
 {
-    rhio.cmd('/localisation/fakeOpponent '+x+' '+y);
+    opponents[k][0] = x;
+    opponents[k][1] = y;
+
+    var cmd = '/localisation/fakeOpponents';
+
+    for (var k in opponents) {
+        var opponent = opponents[k];
+        cmd += ' ' +opponent[0] + ' '+ opponent[1];
+    }
+
+    rhio.cmd(cmd);
 }
 
 function updateSharedBallPosition(x, y)
@@ -508,6 +524,7 @@ $(document).ready(function() {
 
     // Handling dragging
     var dragging = null;
+    var draggingIndex = null;
     var rotating = null;
     var prev;
     var saveRobotPos;
@@ -517,16 +534,21 @@ $(document).ready(function() {
         prev = pos;
 
         if (e.which == 1) {
+            dragging = null;
             if (near(pos, ballX, ballY)) {
                 dragging = 'ball';
             } else if (near(pos, robotX, robotY)) {
                 dragging = 'robot';
-            } else if (near(pos, opponentX, opponentY)) {
-                dragging = 'opponent';
             } else if (near(pos, sharedBallX, sharedBallY)) {
                 dragging = 'shared';
             } else {
-                dragging = null;
+                for (var k in opponents) {
+                    var opponent = opponents[k];
+                    if (near(pos, opponent[0], opponent[1])) {
+                        dragging = 'opponent';
+                        draggingIndex = k;
+                    }
+                }
             }
         }
         if (e.which == 2) {
@@ -547,7 +569,7 @@ $(document).ready(function() {
         } else if (dragging == 'shared') {
             updateSharedBallPosition(pos[0], pos[1]);
         } else if (dragging == 'opponent') {
-            updateOpponentPosition(pos[0], pos[1]);
+            updateOpponentPosition(draggingIndex, pos[0], pos[1]);
         } else if (dragging == 'robot') {
             updateRobotPosition(pos[0], pos[1], robotYaw);
         } else if (rotating == 'robot') {

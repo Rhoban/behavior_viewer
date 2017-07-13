@@ -132,12 +132,12 @@ if (fieldType == 'official') {
 if (fieldType == 'eirlab') {
     // Field dimensions (Eirlab)
     var fieldLength = 8;
-    var fieldWidth = 5.9;
-    var fieldBorder = 0.5;
+    var fieldWidth = 6;
+    var fieldBorder = 0.3;
     var goalWidth = 2.6;
-    var penaltyMark = 1.8;
-    var goalAreaLength = 0.6;
-    var goalAreaWidth = 3.45;
+    var penaltyMark = 2;
+    var goalAreaLength = 1;
+    var goalAreaWidth = 5;
 }
 
 // Robot position

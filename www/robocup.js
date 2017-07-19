@@ -331,8 +331,8 @@ function redraw()
     ctx.restore();
 
     // Drawing kick arrows
-    var approach = rhio.getString('/strategy/activeApproach');
-    if (approach != 'none' && approach != 'conflict') {
+    var kickController = rhio.getString('/strategy/activeKickControler');
+    if (kickController != 'none' && kickController != 'conflict') {
         var kickTargetX = rhio.getFloat('/strategy/kickTargetX');
         var kickTargetY = rhio.getFloat('/strategy/kickTargetY');
         var relX = kickTargetX-ballX;

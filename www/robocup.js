@@ -5,10 +5,11 @@ var fieldType = 'official';
 // Monitored moves
 var monitorMoves = [
     'robocup', 'approach', 'search', 'playing',
-    'standup', 'head', 'walk', 'placer', 'goal_keeper',
+    'standup', 'head', 'walk', 'placer',
     'learned_approach', 'goal_keeper', 'kick_controler',
     'q_kick_controler',
-    'approach_potential', 'penalty'
+    'approach_potential', 'penalty',
+    'clearing_kick_controler'
 ];
 
 // Menu panel
@@ -20,6 +21,9 @@ var menu = [
         'action': function() {
             rhio.cmd('/localisation/resetPosition');
             rhio.cmd('/localisation/fakeBall 1 0');
+            var x = fieldLength/2;
+            var y = -fieldWidth/2;
+            rhio.cmd('/localisation/fakeOpponents '+x+' '+y+' '+(x-1)+' '+y+' '+(x-2)+' '+y);
             rhio.setFloat('/decision/shareX', (fieldLength/2));
             rhio.setFloat('/decision/shareY', (fieldWidth/2));
         }
@@ -129,12 +133,12 @@ if (fieldType == 'official') {
 if (fieldType == 'eirlab') {
     // Field dimensions (Eirlab)
     var fieldLength = 8;
-    var fieldWidth = 5.9;
-    var fieldBorder = 0.5;
+    var fieldWidth = 6;
+    var fieldBorder = 0.3;
     var goalWidth = 2.6;
-    var penaltyMark = 1.8;
-    var goalAreaLength = 0.6;
-    var goalAreaWidth = 3.45;
+    var penaltyMark = 2;
+    var goalAreaLength = 1;
+    var goalAreaWidth = 5;
 }
 
 // Robot position
@@ -148,6 +152,8 @@ var ballX = 0;
 var ballY = 0;
 var sharedBallX = 0;
 var sharedBallY = 0;
+var opponents = [];
+var opponentsRadius = 0;
 
 // Camera aperture
 var cameraAperture = 0;
@@ -234,66 +240,19 @@ function redraw()
     ctx.lineTo(fieldLength/2, -goalAreaWidth/2);
     ctx.stroke();
 
-    ctx.save();
-    // Drawing the robot
-    ctx.lineWidth = 0.07;
-    
-    ctx.translate(robotX, robotY);
-    ctx.rotate(robotYaw);
-    
-    ctx.beginPath();
-    ctx.strokeStyle = 'red';
-    ctx.moveTo(0, 0);
-    ctx.lineTo(0.25, 0);
-    ctx.stroke();
-    
-    ctx.beginPath();
-    ctx.strokeStyle = 'green';
-    ctx.moveTo(0, -0.3);
-    ctx.lineTo(0, 0.3);
-    ctx.stroke();
+    // Opponent 
+    for (var k in opponents) {
+        var opponent = opponents[k];
 
-    // Camera cone
-    ctx.save();
-    ctx.beginPath();
-    ctx.rotate(robotHeadYaw*Math.PI/180);
-    ctx.fillStyle = '#aaa';
-    ctx.globalAlpha=0.4;
-
-    ctx.moveTo(0,0);
-    ctx.lineTo(50*Math.cos(cameraAperture/2),50*Math.sin(cameraAperture/2));
-    ctx.lineTo(50*Math.cos(cameraAperture/2),-50*Math.sin(cameraAperture/2));
-    ctx.lineTo(0,0);
-    ctx.fill();
-    ctx.restore();
-
-    ctx.restore();
-
-    // Drawing kick arrows
-    var approach = rhio.getString('/strategy/activeApproach');
-    if (approach != 'none' && approach != 'conflict') {
-        var kickTargetX = rhio.getFloat('/strategy/kickTargetX');
-        var kickTargetY = rhio.getFloat('/strategy/kickTargetY');
-        var relX = kickTargetX-ballX;
-        var relY = kickTargetY-ballY;
-       
-        var dir = Math.atan2(relY, relX); 
-        var dist = Math.sqrt(relX*relX + relY*relY);
         ctx.save();
-
-        var A = rotate(dist, 0, dir);
-        var B = rotate(dist-0.2, -0.2, dir);
-        var C = rotate(dist-0.2, 0.2, dir);
-
-        ctx.globalAlpha = 0.3;
         ctx.beginPath();
-        ctx.moveTo(ballX, ballY);
-        ctx.lineTo(ballX+A[0], ballY+A[1]);
-        ctx.lineTo(ballX+B[0], ballY+B[1]);
-        ctx.moveTo(ballX+A[0], ballY+A[1]);
-        ctx.lineTo(ballX+C[0], ballY+C[1]);
+        ctx.strokeStyle = 'none';
+        ctx.fillStyle = '#666';
+        ctx.globalAlpha = 0.7;
+        ctx.moveTo(opponent[0], opponent[1]);
+        ctx.arc(opponent[0], opponent[1], opponentsRadius, 0, Math.PI*2);
         ctx.stroke();
-
+        ctx.fill();
         ctx.restore();
     }
     
@@ -337,6 +296,83 @@ function redraw()
     }
     
     ctx.save();
+
+    // Drawing the robot
+    ctx.lineWidth = 0.07;
+    
+    ctx.translate(robotX, robotY);
+    ctx.rotate(robotYaw);
+    
+    ctx.beginPath();
+    ctx.strokeStyle = 'red';
+    ctx.moveTo(0, 0);
+    ctx.lineTo(0.25, 0);
+    ctx.stroke();
+    
+    ctx.beginPath();
+    ctx.strokeStyle = 'green';
+    ctx.moveTo(0, -0.3);
+    ctx.lineTo(0, 0.3);
+    ctx.stroke();
+
+    // Camera cone
+    ctx.save();
+    ctx.beginPath();
+    ctx.rotate(robotHeadYaw*Math.PI/180);
+    ctx.fillStyle = '#aaa';
+    ctx.globalAlpha=0.4;
+
+    ctx.moveTo(0,0);
+    ctx.lineTo(50*Math.cos(cameraAperture/2),50*Math.sin(cameraAperture/2));
+    ctx.lineTo(50*Math.cos(cameraAperture/2),-50*Math.sin(cameraAperture/2));
+    ctx.lineTo(0,0);
+    ctx.fill();
+    ctx.restore();
+
+    ctx.restore();
+
+    // Drawing kick arrows
+    var kickController = rhio.getString('/strategy/activeKickControler');
+    if (kickController != 'none' && kickController != 'conflict') {
+        var kickTargetX = rhio.getFloat('/strategy/kickTargetX');
+        var kickTargetY = rhio.getFloat('/strategy/kickTargetY');
+        var relX = kickTargetX-ballX;
+        var relY = kickTargetY-ballY;
+       
+        var dir = Math.atan2(relY, relX); 
+        var dist = Math.sqrt(relX*relX + relY*relY);
+        ctx.save();
+
+        var A = rotate(dist, 0, dir);
+        var B = rotate(dist-0.2, -0.2, dir);
+        var C = rotate(dist-0.2, 0.2, dir);
+
+        ctx.globalAlpha = 0.3;
+        ctx.beginPath();
+        ctx.moveTo(ballX, ballY);
+        ctx.lineTo(ballX+A[0], ballY+A[1]);
+        ctx.lineTo(ballX+B[0], ballY+B[1]);
+        ctx.moveTo(ballX+A[0], ballY+A[1]);
+        ctx.lineTo(ballX+C[0], ballY+C[1]);
+        ctx.stroke();
+        
+        var kickTolerance = rhio.getFloat('/strategy/kickTolerance')*Math.PI/180.0;
+        var kickControlerDir = rhio.getFloat('/strategy/kickControlerDir')*Math.PI/180.0;
+        ctx.beginPath();
+        ctx.globalAlpha=0.2;
+        ctx.fillStyle = '#eee';
+        ctx.moveTo(ballX, ballY);
+        for (var alpha=-kickTolerance; alpha<=kickTolerance; alpha+=0.05) {
+            ctx.lineTo(ballX+Math.cos(kickControlerDir+alpha)*dist, 
+                ballY+Math.sin(kickControlerDir+alpha)*dist);
+        }
+        ctx.lineTo(ballX, ballY);
+        ctx.fill();
+
+        ctx.restore();
+    }
+    
+    ctx.save();
     ctx.beginPath();
     // Drawing the ball
     ctx.strokeStyle = '#333';
@@ -377,6 +413,8 @@ function update()
     ballY = rhio.getFloat('/localisation/ballFieldY');
     sharedBallX = rhio.getFloat("/decision/shareX");
     sharedBallY = rhio.getFloat("/decision/shareY");
+    opponents = eval(rhio.getString('/localisation/opponents'));
+    opponentsRadius = rhio.getFloat('/localisation/opponentsRadius');
 
     // Getting the moves
     moves = rhio.cmd('/moves/moves');
@@ -465,6 +503,21 @@ function updateBallPosition(x, y)
     rhio.cmd('/localisation/fakeBall '+x+' '+y);
 }
 
+function updateOpponentPosition(k, x, y)
+{
+    opponents[k][0] = x;
+    opponents[k][1] = y;
+
+    var cmd = '/localisation/fakeOpponents';
+
+    for (var k in opponents) {
+        var opponent = opponents[k];
+        cmd += ' ' +opponent[0] + ' '+ opponent[1];
+    }
+
+    rhio.cmd(cmd);
+}
+
 function updateSharedBallPosition(x, y)
 {
     rhio.setFloat('/decision/shareX', x);
@@ -485,6 +538,7 @@ $(document).ready(function() {
 
     // Handling dragging
     var dragging = null;
+    var draggingIndex = null;
     var rotating = null;
     var prev;
     var saveRobotPos;
@@ -494,6 +548,7 @@ $(document).ready(function() {
         prev = pos;
 
         if (e.which == 1) {
+            dragging = null;
             if (near(pos, ballX, ballY)) {
                 dragging = 'ball';
             } else if (near(pos, robotX, robotY)) {
@@ -501,7 +556,13 @@ $(document).ready(function() {
             } else if (near(pos, sharedBallX, sharedBallY)) {
                 dragging = 'shared';
             } else {
-                dragging = null;
+                for (var k in opponents) {
+                    var opponent = opponents[k];
+                    if (near(pos, opponent[0], opponent[1])) {
+                        dragging = 'opponent';
+                        draggingIndex = k;
+                    }
+                }
             }
         }
         if (e.which == 2) {
@@ -521,6 +582,8 @@ $(document).ready(function() {
             updateBallPosition(pos[0], pos[1]);
         } else if (dragging == 'shared') {
             updateSharedBallPosition(pos[0], pos[1]);
+        } else if (dragging == 'opponent') {
+            updateOpponentPosition(draggingIndex, pos[0], pos[1]);
         } else if (dragging == 'robot') {
             updateRobotPosition(pos[0], pos[1], robotYaw);
         } else if (rotating == 'robot') {

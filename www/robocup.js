@@ -1,6 +1,6 @@
 
 // Field
-var fieldType = 'eirlab';
+var fieldType = 'official';
 
 // Monitored moves
 var monitorMoves = [

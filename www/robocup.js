@@ -6,7 +6,7 @@ var fieldType = 'official';
 var monitorMoves = [
     'robocup', 'approach', 'search', 'playing',
     'standup', 'head', 'walk', 'placer',
-    'learned_approach', 'goal_keeper', 'kick_controler',
+    'learned_approach', 'goal_keeper', 'kick_controller',
     'q_kick_controler',
     'approach_potential', 'penalty',
     'clearing_kick_controler'
@@ -332,7 +332,7 @@ function redraw()
     ctx.restore();
 
     // Drawing kick arrows
-    var kickController = rhio.getString('/strategy/activeKickControler');
+    var kickController = rhio.getString('/strategy/activeKickController');
     if (kickController != 'none' && kickController != 'conflict') {
         var kickTargetX = rhio.getFloat('/strategy/kickTargetX');
         var kickTargetY = rhio.getFloat('/strategy/kickTargetY');
@@ -357,14 +357,14 @@ function redraw()
         ctx.stroke();
         
         var kickTolerance = rhio.getFloat('/strategy/kickTolerance')*Math.PI/180.0;
-        var kickControlerDir = rhio.getFloat('/strategy/kickControlerDir')*Math.PI/180.0;
+        var kickControllerDir = rhio.getFloat('/strategy/kickControllerDir')*Math.PI/180.0;
         ctx.beginPath();
         ctx.globalAlpha=0.2;
         ctx.fillStyle = '#eee';
         ctx.moveTo(ballX, ballY);
         for (var alpha=-kickTolerance; alpha<=kickTolerance; alpha+=0.05) {
-            ctx.lineTo(ballX+Math.cos(kickControlerDir+alpha)*dist, 
-                ballY+Math.sin(kickControlerDir+alpha)*dist);
+            ctx.lineTo(ballX+Math.cos(kickControllerDir+alpha)*dist, 
+                ballY+Math.sin(kickControllerDir+alpha)*dist);
         }
         ctx.lineTo(ballX, ballY);
         ctx.fill();

@@ -269,9 +269,9 @@ function redraw()
                 ctx.beginPath();
                 for (var k in path) {
                     if (first) {
-                        ctx.moveTo(path[k][0]/100., path[k][1]/100.);
+                        ctx.moveTo(path[k][0], path[k][1]);
                     } else {
-                        ctx.lineTo(path[k][0]/100., path[k][1]/100.);
+                        ctx.lineTo(path[k][0], path[k][1]);
                     }
                     first = false;
                 }
@@ -279,8 +279,8 @@ function redraw()
             }
             ctx.restore();
 
-            var x = rhio.getFloat('/moves/placer/tmpX')/100.0;
-            var y = rhio.getFloat('/moves/placer/tmpY')/100.0;
+            var x = rhio.getFloat('/moves/placer/tmpX');
+            var y = rhio.getFloat('/moves/placer/tmpY');
 
             ctx.save();
             ctx.beginPath();

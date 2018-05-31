@@ -41,8 +41,8 @@ var menu = [
         'label': 'Is auto placing',
         'node': '/moves/robocup/autoKickOff',
         'draw': function(ctx) {
-            var x = rhio.getFloat('/moves/robocup/autoTargetX')/100.0;
-            var y = rhio.getFloat('/moves/robocup/autoTargetY')/100.0;
+            var x = rhio.getFloat('/moves/placer/targetX');
+            var y = rhio.getFloat('/moves/placer/targetY');
 
             ctx.save();
             ctx.globalAlpha=0.5;

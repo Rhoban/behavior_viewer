@@ -86,16 +86,6 @@ var menu = [
         'node': '/decision/handled'
     },
     {
-        'type': 'bool',
-        'label': 'Am I the nearest?',
-        'node': '/decision/iAmTheNearest'
-    },
-    {
-        'type': 'bool',
-        'label': 'Should let play (team)',
-        'node': '/decision/shouldLetPlayTeam'
-    },
-    {
         "type": "separator"
     },
     {
@@ -103,6 +93,12 @@ var menu = [
         'readOnly': true,
         'label': 'Should let play',
         'node': '/decision/shouldLetPlay'
+    },
+    {
+        'type': 'bool',
+        'readOnly': true,
+        'label': 'I am captain',
+        'node': '/captain/IAmCaptain'
     },
     {
         "type": "separator"

@@ -17,9 +17,11 @@ Then:
     cd build
 
 Before building you should check that qmake uses Qt 5:
+
     qmake -v
 
 Then:
+
     qmake ../behavior.pro
     make
 

@@ -40,10 +40,10 @@ set (SOURCES
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/../../../bin/)
 
 # Tell CMake to create the helloworld executable
-add_executable(behavior_viewer ${SOURCES})
+add_executable(BehaviorViewer ${SOURCES})
 
 # Widgets
-qt5_use_modules(behavior_viewer
+qt5_use_modules(BehaviorViewer
     Core
     Gui
     Network
@@ -52,4 +52,4 @@ qt5_use_modules(behavior_viewer
     Widgets
 )
 
-target_link_libraries(behavior_viewer ${catkin_LIBRARIES} pthread)
+target_link_libraries(BehaviorViewer ${catkin_LIBRARIES} pthread)

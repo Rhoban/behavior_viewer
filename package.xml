@@ -13,4 +13,8 @@
   <author email="gpassault@labri.fr">Grégoire Passault</author>
 
   <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>RhIOClient</build_depend> <!-- rhoban/rhio -->
+
+  <run_depend>RhIOClient</run_depend>
 </package>

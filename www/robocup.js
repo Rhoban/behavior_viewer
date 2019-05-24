@@ -121,7 +121,7 @@ if (fieldType == 'official') {
     var fieldWidth = 6;
     var fieldBorder = 0.5;
     var goalWidth = 2.6;
-    var penaltyMark = 3;
+    var penaltyMark = 1.5;
     var goalAreaLength = 1;
     var goalAreaWidth = 5;
 }
@@ -132,7 +132,7 @@ if (fieldType == 'eirlab') {
     var fieldWidth = 6;
     var fieldBorder = 0.3;
     var goalWidth = 2.6;
-    var penaltyMark = 3;
+    var penaltyMark = 1.5;
     var goalAreaLength = 1;
     var goalAreaWidth = 5;
 }

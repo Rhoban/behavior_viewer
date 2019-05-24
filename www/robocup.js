@@ -7,7 +7,7 @@ var monitorMoves = [
     'robocup', 'approach', 'search', 'playing',
     'standup', 'head', 'walk', 'placer',
     'learned_approach', 'goal_keeper', 'kick_controller',
-    'q_kick_controler',
+    'mc_kick_controler',
     'approach_potential', 'penalty',
     'clearing_kick_controler'
 ];
@@ -121,18 +121,18 @@ if (fieldType == 'official') {
     var fieldWidth = 6;
     var fieldBorder = 0.5;
     var goalWidth = 2.6;
-    var penaltyMark = 2.1;
+    var penaltyMark = 3;
     var goalAreaLength = 1;
     var goalAreaWidth = 5;
 }
 
 if (fieldType == 'eirlab') {
     // Field dimensions (Eirlab)
-    var fieldLength = 8;
+    var fieldLength = 9;
     var fieldWidth = 6;
     var fieldBorder = 0.3;
     var goalWidth = 2.6;
-    var penaltyMark = 2;
+    var penaltyMark = 3;
     var goalAreaLength = 1;
     var goalAreaWidth = 5;
 }

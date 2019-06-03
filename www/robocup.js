@@ -15,8 +15,8 @@ var menu = [
     'type': 'button',
     'label': 'Reset position',
     'action': function() {
-      rhio.cmd('/localisation/resetPosition');
-      rhio.cmd('/localisation/fakeBall 1 0');
+      rhio.cmd('/localisation/moveOnField 3.5 0 0');
+      rhio.cmd('/localisation/fakeBall 1 1');
       var x = fieldLength / 2;
       var y = -fieldWidth / 2;
       rhio.cmd('/localisation/fakeOpponents ' + x + ' ' + y + ' ' + (x - 1) + ' ' + y + ' ' + (x - 2) + ' ' + y);
@@ -28,11 +28,6 @@ var menu = [
     'type': 'bool',
     'label': 'Is goal keeper',
     'node': '/moves/robocup/goalKeeper',
-  },
-  {
-    'type': 'bool',
-    'label': 'Is auto placing',
-    'node': '/moves/robocup/autoKickOff',
     'draw': function(ctx) {
       var x = rhio.getFloat('/moves/placer/targetX');
       var y = rhio.getFloat('/moves/placer/targetY');

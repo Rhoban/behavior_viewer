@@ -201,9 +201,30 @@ function redraw()
     ctx.restore();
   }
 
-  // Path
+  for (var id in sharedOpponents)
+  {
+    var allOpponents = sharedOpponents[id];
+    for(let k in allOpponents)
+    {
+      var opponent = allOpponents[k];
+      console.log(opponent);
+      ctx.save();
+      ctx.beginPath();
+      ctx.strokeStyle = 'none';
+      ctx.fillStyle = '#888';
+      ctx.globalAlpha = 0.7;
+      ctx.moveTo(opponent[0], opponent[1]);
+      ctx.arc(opponent[0], opponent[1], opponentsRadius, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+
+    // Path
   if ('placer' in moveStates)
   {
+
     if (moveStates['placer'] == 'running')
     {
       ctx.save();
@@ -369,7 +390,9 @@ function update()
   ballY = rhio.getFloat('/localisation/ballFieldY');
   sharedBallX = rhio.getFloat('/decision/shareX');
   sharedBallY = rhio.getFloat('/decision/shareY');
-  opponents = eval(rhio.getString('/localisation/opponents'));
+  opponents = JSON.parse(rhio.getString('/localisation/opponents'));
+  sharedOpponents = JSON.parse(rhio.getString('/localisation/sharedOpponents'));
+
   opponentsRadius = rhio.getFloat('/localisation/opponentsRadius');
 
   // Getting the moves

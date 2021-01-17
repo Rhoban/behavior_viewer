@@ -1,3 +1,4 @@
+#include <QAction>
 #include <QWebFrame>
 #include <QWebInspector>
 #include "mainwindow.h"

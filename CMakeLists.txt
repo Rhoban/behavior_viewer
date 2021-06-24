@@ -1,20 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
 project(behavior_viewer)
-set (CMAKE_CXX_STANDARD 17)
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ")
-
-find_package(catkin 
-REQUIRED COMPONENTS
-RhIOClient
-)
-
-catkin_package(
-  INCLUDE_DIRS .
-  CATKIN_DEPENDS
-  RhIOClient
-)
-
-include_directories(${catkin_INCLUDE_DIRS})
 
 # Find the QtWidgets library
 find_package(Qt5Widgets)
@@ -50,4 +35,7 @@ qt5_use_modules(BehaviorViewer
     Widgets
 )
 
-target_link_libraries(BehaviorViewer ${catkin_LIBRARIES} pthread)
+target_link_libraries(BehaviorViewer RhIOClient pthread)
+target_include_directories(BehaviorViewer PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+)

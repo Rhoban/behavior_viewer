@@ -379,6 +379,15 @@ function redraw()
   ctx.restore();
 }
 
+function tryParse(str)
+{
+  try {
+    return JSON.parse(str);
+  } catch (SyntaxError) {
+    return [];
+  }
+}
+
 function update()
 {
   // Getting field positions
@@ -390,8 +399,8 @@ function update()
   ballY = rhio.getFloat('/localisation/ballFieldY');
   sharedBallX = rhio.getFloat('/decision/shareX');
   sharedBallY = rhio.getFloat('/decision/shareY');
-  opponents = JSON.parse(rhio.getString('/localisation/opponents'));
-  sharedOpponents = JSON.parse(rhio.getString('/localisation/sharedOpponents'));
+  opponents = tryParse(rhio.getString('/localisation/opponents'));
+  sharedOpponents = tryParse(rhio.getString('/localisation/sharedOpponents'));
 
   opponentsRadius = rhio.getFloat('/localisation/opponentsRadius');
 

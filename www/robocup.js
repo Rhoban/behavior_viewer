@@ -252,8 +252,8 @@ function redraw()
       }
       ctx.restore();
 
-      var x = rhio.getFloat('/moves/placer/tmpX');
-      var y = rhio.getFloat('/moves/placer/tmpY');
+      var x = rhio.getFloat('/moves/placer/localTargetX');
+      var y = rhio.getFloat('/moves/placer/localTargetY');
 
       ctx.save();
       ctx.beginPath();

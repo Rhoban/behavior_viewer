@@ -192,7 +192,14 @@ function redraw()
     ctx.save();
     ctx.beginPath();
     ctx.strokeStyle = 'none';
-    ctx.fillStyle = '#666';
+
+    if (opponents[k][2] > 0.5)
+      ctx.fillStyle = 'blue';
+    else if (opponents[k][2] < -0.5)
+      ctx.fillStyle = 'red';
+    else
+      ctx.fillStyle = '#666';
+      
     ctx.globalAlpha = 0.7;
     ctx.moveTo(opponent[0], opponent[1]);
     ctx.arc(opponent[0], opponent[1], opponentsRadius, 0, Math.PI * 2);

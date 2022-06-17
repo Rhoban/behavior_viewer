@@ -67,13 +67,17 @@ var ctx;
 if (fieldType == 'official')
 {
   // Field dimensions (Robocup official)
-  var fieldLength = 9;
-  var fieldWidth = 6;
-  var fieldBorder = 0.5;
-  var goalWidth = 2.6;
-  var penaltyMark = 1.5;
-  var goalAreaLength = 1;
-  var goalAreaWidth = 5;
+  var fieldLength = rhio.getFloat('/field/field_length');
+  var fieldWidth = rhio.getFloat('/field/field_width');
+  var fieldBorder = rhio.getFloat('/field/border_strip_width_x');
+  var goalWidth = rhio.getFloat('/field/goal_width');
+  var penaltyMark = rhio.getFloat('/field/penalty_mark_dist');
+  var goalAreaLength = rhio.getFloat('/field/goal_area_length');
+  var goalAreaWidth = rhio.getFloat('/field/goal_area_width');
+  var centerRadius = rhio.getFloat('/field/center_radius');
+  var penaltyAreaLength = rhio.getFloat('/field/penalty_area_length');
+  var penaltyAreaWidth = rhio.getFloat('/field/penalty_area_width');
+  var ballRadius = rhio.getFloat('/field/ball_radius');
 }
 
 if (fieldType == 'eirlab')
@@ -136,7 +140,7 @@ function redraw()
 
   // Center circle
   ctx.beginPath();
-  ctx.arc(0, 0, 0.75, 0, Math.PI * 2);
+  ctx.arc(0, 0, centerRadius, 0, Math.PI * 2);
   ctx.stroke();
 
   // Middle line
@@ -183,6 +187,20 @@ function redraw()
   ctx.lineTo(fieldLength / 2 - goalAreaLength, -goalAreaWidth / 2);
   ctx.lineTo(fieldLength / 2, -goalAreaWidth / 2);
   ctx.stroke();
+
+  // Penalty area
+  ctx.beginPath();
+  ctx.moveTo(-fieldLength / 2, penaltyAreaWidth / 2);
+  ctx.lineTo(-fieldLength / 2 + penaltyAreaLength, penaltyAreaWidth / 2);
+  ctx.lineTo(-fieldLength / 2 + penaltyAreaLength, -penaltyAreaWidth / 2);
+  ctx.lineTo(-fieldLength / 2, -penaltyAreaWidth / 2);
+
+  ctx.moveTo(fieldLength / 2, penaltyAreaWidth / 2);
+  ctx.lineTo(fieldLength / 2 - penaltyAreaLength, penaltyAreaWidth / 2);
+  ctx.lineTo(fieldLength / 2 - penaltyAreaLength, -penaltyAreaWidth / 2);
+  ctx.lineTo(fieldLength / 2, -penaltyAreaWidth / 2);
+  ctx.stroke();
+
 
   // Opponent
   for (var k in opponents)
@@ -360,7 +378,7 @@ function redraw()
   ctx.strokeStyle = '#333';
   ctx.fillStyle = '#ff3';
   ctx.moveTo(ballX, ballY);
-  ctx.arc(ballX, ballY, 0.1, 0, Math.PI * 2);
+  ctx.arc(ballX, ballY, ballRadius, 0, Math.PI * 2);
   ctx.stroke();
   ctx.fill();
 
@@ -369,7 +387,7 @@ function redraw()
   ctx.strokeStyle = '#333';
   ctx.fillStyle = '#16c0f8';
   ctx.moveTo(sharedBallX, sharedBallY);
-  ctx.arc(sharedBallX, sharedBallY, 0.1, 0, Math.PI * 2);
+  ctx.arc(sharedBallX, sharedBallY, ballRadius, 0, Math.PI * 2);
   ctx.stroke();
   ctx.fill();
 

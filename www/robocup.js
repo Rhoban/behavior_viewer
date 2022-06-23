@@ -211,10 +211,10 @@ function redraw()
     ctx.beginPath();
     ctx.strokeStyle = 'none';
 
-    if (opponents[k][2] > 0.5)
-      ctx.fillStyle = 'blue';
-    else if (opponents[k][2] < -0.5)
+    if (opponents[k][2] > 0.6)
       ctx.fillStyle = 'red';
+    else if (opponents[k][2] < 0.4)
+      ctx.fillStyle = 'blue';
     else
       ctx.fillStyle = '#666';
       

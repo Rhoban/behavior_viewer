@@ -5,7 +5,7 @@ var fieldType = 'official';
 // Monitored moves
 var monitorMoves = [
   'robocup', 'approach', 'search', 'playing', 'standup', 'head', 'walk', 'placer', 'learned_approach', 'goal_keeper',
-  'kick_controller', 'mc_kick_controler', 'approach_potential', 'penalty', 'clearing_kick_controler'
+  'kick_controller', 'mc_kick_controler', 'approach_potential', 'penalty', 'clearing_kick_controler', 'rl_kick_controller'
 ];
 
 // Menu panel
